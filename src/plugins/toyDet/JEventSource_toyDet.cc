@@ -17,8 +17,6 @@
 JEventSource_toyDet::JEventSource_toyDet(std::string source_name, JApplication *app):JEventSource(source_name, app)
 {
 	// Don't open the file/stream here. Do it in the Open() method below.
-        // Create instance of file
-        auto ifs = new ifstream(mName);
 
 	// Uncomment the line below and modify it to specify all of the data types this source
 	// provides. The "MyHit" and "MyTrigger" are just examples of JObject types you might
@@ -73,7 +71,7 @@ vector <double> JEventSource_toyDet::convStrToVecDbl(string strToConv) {
 std::shared_ptr<const JEvent> JEventSource_toyDet::GetEvent(void)
 {
 
-  	/// Read an event (or possibly block of events) from the source return it.
+  	// Read an event (or possibly block of events) from the source return it.
 	
 	// If an event was successfully read in, return kSUCCESS. If there
 	// are no more events in the source to read, return kNO_MORE_EVENTS.
@@ -97,8 +95,8 @@ std::shared_ptr<const JEvent> JEventSource_toyDet::GetEvent(void)
 	  while (getline(ifs, line)) {
 
 	    cout << "Level 0: line = " << line << endl;
-	    cout << "Level 0: event tdc vec size = " << eventTdcData.size() << endl;
-	    cout << "Level 0: event adc vec size = " << eventAdcData.size() << endl;
+	    cout << "Level 0: event tdc vec size = "   << eventTdcData.size() << endl;
+	    cout << "Level 0: event adc vec size = "   << eventAdcData.size() << endl;
 	    cout << "Level 0: channel tdc vec size = " << chanTdcData.size() << endl;
 	    cout << "Level 0: channel adc vec size = " << chanAdcData.size() << endl;
 
@@ -113,8 +111,8 @@ std::shared_ptr<const JEvent> JEventSource_toyDet::GetEvent(void)
 	      }
 
 	      cout << "Level 1: line = " << line << endl;
-	      cout << "Level 1: event tdc vec size = " << eventTdcData.size() << endl;
-	      cout << "Level 1: event adc vec size = " << eventAdcData.size() << endl;
+	      cout << "Level 1: event tdc vec size = "   << eventTdcData.size() << endl;
+	      cout << "Level 1: event adc vec size = "   << eventAdcData.size() << endl;
 	      cout << "Level 1: channel tdc vec size = " << chanTdcData.size() << endl;
 	      cout << "Level 1: channel adc vec size = " << chanAdcData.size() << endl;
 
@@ -126,6 +124,7 @@ std::shared_ptr<const JEvent> JEventSource_toyDet::GetEvent(void)
 	      eventTdcData = convStrToVecDbl(line);
 	      // cout << "tdc data" << endl;
 	      // for (auto data : eventTdcData) cout << data << endl;
+	      // jevent->Insert(eventTdcData);
 	    }
 	    if (lineCntr > 0 && lineCntr % 2 != 0 && chanDelim == string::npos) { // adc data
 	      eventAdcData = convStrToVecDbl(line);
@@ -134,8 +133,8 @@ std::shared_ptr<const JEvent> JEventSource_toyDet::GetEvent(void)
 	    }
 
 	    cout << "Level 2: line = " << line << endl;
-	    cout << "Level 2: event tdc vec size = " << eventTdcData.size() << endl;
-	    cout << "Level 2: event adc vec size = " << eventAdcData.size() << endl;
+	    cout << "Level 2: event tdc vec size = "   << eventTdcData.size() << endl;
+	    cout << "Level 2: event adc vec size = "   << eventAdcData.size() << endl;
 	    cout << "Level 2: channel tdc vec size = " << chanTdcData.size() << endl;
 	    cout << "Level 2: channel adc vec size = " << chanAdcData.size() << endl;
 
@@ -157,6 +156,10 @@ std::shared_ptr<const JEvent> JEventSource_toyDet::GetEvent(void)
 	  cout << "!!! Unable to open in JEventSource_toyDet::GetEvent !!!" << endl;
 	  exit(1); // terminate with error
 	}
+	
+	A->push_back(1.0); B->push_back(2);
+	jevent->Insert(A);
+	jevent->Insert(B);
 
 	return std::shared_ptr<JEvent>( (JEvent*)jevent );
 }

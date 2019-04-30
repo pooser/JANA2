@@ -9,20 +9,20 @@
 // [ Source ]
 // [ Revision ]
 
-using namespace std;
+#ifndef _JEventSource_toyDet_h_
+#define _JEventSource_toyDet_h_
 
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <vector>
 
-#ifndef _JEventSource_toyDet_h_
-#define _JEventSource_toyDet_h_
-
 #include <JANA/JEventSource.h>
 #include <JANA/JEventSourceGeneratorT.h>
 
 #include "JEvent_toyDet.h"
+
+using namespace std;
 
 // This first bit is optional. It allows you to specify how likely this class
 // is to read from a given source. Uncomment this if you want to return something
@@ -45,7 +45,14 @@ class JEventSource_toyDet : public JEventSource{
 		static std::string GetDescription(void){ return "My Event source"; }
 		void Open(void);
 
-		// User defined variables
+		std::shared_ptr<const JEvent> GetEvent(void);
+		bool GetObjects(const std::shared_ptr<const JEvent>& aEvent, JFactory* aFactory);
+		// std::shared_ptr<JTaskBase> GetProcessEventTask(std::shared_ptr<const JEvent>&& aEvent);
+
+                vector <double> *A; vector <int> *B;
+
+        private:
+                // User defined variables
 		ifstream ifs;
 		string line;
 		vector <double>            eventTdcData, eventAdcData;
@@ -53,10 +60,6 @@ class JEventSource_toyDet : public JEventSource{
 
 		// User defined functions
 		vector <double> convStrToVecDbl(string strToConv);
-
-		std::shared_ptr<const JEvent> GetEvent(void);
-		bool GetObjects(const std::shared_ptr<const JEvent>& aEvent, JFactory* aFactory);
-		// std::shared_ptr<JTaskBase> GetProcessEventTask(std::shared_ptr<const JEvent>&& aEvent);
 
 };
 
