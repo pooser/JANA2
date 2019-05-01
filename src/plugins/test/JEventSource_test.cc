@@ -55,7 +55,7 @@ std::shared_ptr<const JEvent> JEventSource_test::GetEvent(void)
 
   	// Throw exception if we have exhausted the source of events
 	static size_t Nevents = 0; // by way of example, just count 1000000 events
-	if( ++Nevents > 10000 ) throw JEventSource::RETURN_STATUS::kNO_MORE_EVENTS;
+	if( ++Nevents > 100 ) throw JEventSource::RETURN_STATUS::kNO_MORE_EVENTS;
 	
 	// This should read an event from the input stream and make a
 	// JEventtest out of it.
@@ -89,14 +89,13 @@ bool JEventSource_test::GetObjects(const std::shared_ptr<const JEvent>& aEvent, 
 	// Check the type of data being requested is one we can provide. If so,
 	// make the objects and hand them over to aFactory.
 	if( name == "MyHit" ){
-	  vector<MyHit*> hits;
+	  // vector<MyHit*> hits;
 	  // ... create MyHit objects from data in aEvent and add them to hits vector
-	  double x = 10.;
-	  double E = 5.;
-	  double t = 1.;
-	  hits.push_back(new MyHit(x, E, t));
+	  double x = 10.; double E = 5.; double t = 1.;
+	  // hits.push_back(new MyHit(x, E, t));
 	  // aFactory->Set(hits);
-	  ((JFactoryT<MyHit>*)aFactory)->Insert(new MyHit(x, E, t));
+	  // ((JFactoryT<MyHit>*) aFactory)->Insert(new MyHit(x, E, t));
+	  static_cast <JFactoryT<MyHit>*> (aFactory)->Insert(new MyHit(x, E, t));
 	}
 	else if(name == "MyTrigger"){
 		// ... similarly for additional data types this source provides

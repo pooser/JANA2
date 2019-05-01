@@ -10,6 +10,7 @@
 // [ Revision ]
 
 #include "JEventProcessor_test.h"
+#include "MyHit.h"
 
 //---------------------------------
 // JEventProcessor_test    (Constructor)
@@ -32,7 +33,13 @@ JEventProcessor_test::~JEventProcessor_test()
 //------------------
 void JEventProcessor_test::Init(void)
 {
-	// This is called once at program startup.
+
+  // This is called once at program startup.
+  testFile = new TFile("test.root", "RECREATE");
+  xHisto   = new TH1I("xHisto", "x test; x test; NOE", 100, 0, 100);
+  EHisto   = new TH1I("EHisto", "E test; E test; NOE", 100, 0, 100);
+  tHisto   = new TH1I("tHisto", "t test; t test; NOE", 100, 0, 100);
+  
 }
 
 //------------------
@@ -53,6 +60,16 @@ void JEventProcessor_test::Process(const std::shared_ptr<const JEvent>& aEvent)
 	// for( auto t : myTracks ){
 	//  ... fill histograms or trees ...
 	// }
+
+        lock_guard<mutex> lck( mymutex );
+
+	auto myHit = aEvent->Get<MyHit>();
+
+	for(auto h : myHit) {
+	  double x = h->x; double E = h->E; double t = h->t;
+	  xHisto->Fill(x); EHisto->Fill(E); tHisto->Fill(t);
+	}
+
 }
 
 //------------------
@@ -61,4 +78,5 @@ void JEventProcessor_test::Process(const std::shared_ptr<const JEvent>& aEvent)
 void JEventProcessor_test::Finish(void)
 {
 	// This is called when at the end of event processing
+	testFile->Write(); testFile->Close();
 }

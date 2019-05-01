@@ -7,11 +7,9 @@
 class MyHit:public JObject{
 	public:
 
-		MyHit(double _x, double _E, double _t):x(_x),E(_E),t(_t){}
-
-		double x;
-		double E;
-		double t;
+                MyHit(double x, double E, double t) : x(x), E(E), t(t) {}
+		double x, E, t;
+		
 };
 
 #endif // _MyHit_h_XS

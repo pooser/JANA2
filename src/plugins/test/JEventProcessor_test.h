@@ -13,9 +13,17 @@
 #ifndef _JEventProcessor_test_h_
 #define _JEventProcessor_test_h_
 
+#include <mutex>
+
 #include <JANA/JEventProcessor.h>
+#include <JANA/JEvent.h>
 
 #include "MyHit.h"
+
+#include <TFile.h>
+#include <TH1.h>
+
+using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 /// Brief class description.
@@ -33,10 +41,15 @@ class JEventProcessor_test : public JEventProcessor{
 		// }
 		virtual void Finish(void);
 
+                TFile *testFile;
+                TH1I  *xHisto, *EHisto, *tHisto;
+
 	protected:
 
 
-	private:
+        private:
+
+                mutex mymutex;
 
 };
 
