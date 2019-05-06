@@ -50,7 +50,8 @@ void JEventSource_test::Open(void)
 //------------------
 // GetEvent
 //------------------
-std::shared_ptr<const JEvent> JEventSource_test::GetEvent(void)
+// std::shared_ptr<const JEvent> JEventSource_test::GetEvent(void)
+void JEventSource_test::GetEvent(std::shared_ptr<JEvent> event)
 {
 
   	// Throw exception if we have exhausted the source of events
@@ -60,9 +61,14 @@ std::shared_ptr<const JEvent> JEventSource_test::GetEvent(void)
 	// This should read an event from the input stream and make a
 	// JEventtest out of it.
 
-	auto jevent = new MyEvent();
+	// auto jevent = new MyEvent();
 	// ... add event data to jevent ...
-	return std::shared_ptr<JEvent>( (JEvent*)jevent );
+	// return std::shared_ptr<JEvent>( (JEvent*)jevent );
+
+	double x = 10.; double E = 5.; double t = 1.;
+	event->Insert(new MyHit(x, E, t));
+
+	// return event;
 }
 
 //------------------
@@ -91,11 +97,11 @@ bool JEventSource_test::GetObjects(const std::shared_ptr<const JEvent>& aEvent, 
 	if( name == "MyHit" ){
 	  // vector<MyHit*> hits;
 	  // ... create MyHit objects from data in aEvent and add them to hits vector
-	  double x = 10.; double E = 5.; double t = 1.;
-	  // hits.push_back(new MyHit(x, E, t));
-	  // aFactory->Set(hits);
-	  // ((JFactoryT<MyHit>*) aFactory)->Insert(new MyHit(x, E, t));
-	  static_cast <JFactoryT<MyHit>*> (aFactory)->Insert(new MyHit(x, E, t));
+	  // double x = 10.; double E = 5.; double t = 1.;
+	  // // hits.push_back(new MyHit(x, E, t));
+	  // // aFactory->Set(hits);
+	  // // ((JFactoryT<MyHit>*) aFactory)->Insert(new MyHit(x, E, t));
+	  // static_cast <JFactoryT<MyHit>*> (aFactory)->Insert(new MyHit(x, E, t));
 	}
 	else if(name == "MyTrigger"){
 		// ... similarly for additional data types this source provides
