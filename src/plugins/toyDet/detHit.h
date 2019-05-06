@@ -16,11 +16,14 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 class detHit:public JObject{
-
  public:
   
   detHit();
   virtual ~detHit();
+  
+  detHit(double A, int B) : A(A), B(B) {}
+  double A; int B;
+		
 		
  protected:
 	

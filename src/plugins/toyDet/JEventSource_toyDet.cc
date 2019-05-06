@@ -54,7 +54,8 @@ void JEventSource_toyDet::Open(void)
 //------------------
 // GetEvent
 //------------------
-std::shared_ptr<const JEvent> JEventSource_toyDet::GetEvent(void)
+// std::shared_ptr<const JEvent> JEventSource_toyDet::GetEvent(void)
+void JEventSource_toyDet::GetEvent(std::shared_ptr<JEvent> event)
 {
 
   // Read an event (or possibly block of events) from the source return it.
@@ -72,7 +73,7 @@ std::shared_ptr<const JEvent> JEventSource_toyDet::GetEvent(void)
 
   // This should read an event from the input stream and make a
   // JEventtoyDet out of it.
-  auto jevent = new JEvent_toyDet();
+  // auto jevent = new JEvent_toyDet();
   // ... add event data to jevent ...
   if (ifs.is_open()) {
 
@@ -151,13 +152,16 @@ std::shared_ptr<const JEvent> JEventSource_toyDet::GetEvent(void)
     // grab last channel data
     data.push_back(new rawSamples(eventCntr, chanCntr - 1, tdcData, adcData));
     cout << "data size = " << data.size() << endl;
+
+    event->Insert(new rawSamples(eventCntr, chanCntr - 1, tdcData, adcData));
+
   }
   else {
     cout << "!!! Unable to open in JEventSource_toyDet::GetEvent !!!" << endl;
     exit(1); // terminate with error
   }
 	
-  return std::shared_ptr<JEvent>( (JEvent*)jevent );
+  // return std::shared_ptr<JEvent>( (JEvent*)jevent );
 
 }
 

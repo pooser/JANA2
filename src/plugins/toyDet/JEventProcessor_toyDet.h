@@ -51,6 +51,7 @@ class JEventProcessor_toyDet : public JEventProcessor{
 
   TFile *testFile;
   TH1I  *aHisto, *bHisto, *cHisto, *dHisto;
+  TH1I  *eventHisto, *chanHisto;
 
 };
 

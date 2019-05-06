@@ -10,6 +10,7 @@
 // [ Revision ]
 
 #include "JEventProcessor_toyDet.h"
+#include "rawSamples.h"
 
 //---------------------------------
 // JEventProcessor_toyDet    (Constructor)
@@ -38,6 +39,9 @@ void JEventProcessor_toyDet::Init(void)
   bHisto   = new TH1I("bHisto", "b test; b test; NOE", 100, 0, 100);
   cHisto   = new TH1I("cHisto", "c test; c test; NOE", 100, 0, 100);
   dHisto   = new TH1I("dHisto", "d test; d test; NOE", 100, 0, 100);
+
+  eventHisto = new TH1I("eventHisto", "Event Number Histogram; Event Number; Number of Entries", 10, 0, 10);
+  chanHisto  = new TH1I("chanHisto",  "Channel Number Histogram; Channel Number; Number of Entries", 10, 0, 10);
 }
 
 //------------------
@@ -66,6 +70,14 @@ void JEventProcessor_toyDet::Process(const std::shared_ptr<const JEvent>& aEvent
   for(auto h : hit) {
     double a = h->A; double b = h->B;
     cHisto->Fill(a); dHisto->Fill(b);
+  }
+
+  auto data = aEvent->Get<rawSamples>();
+  for (auto theData : data) {
+    int eventNum = theData->event;
+    int chanNum  = theData->chan;
+    eventHisto->Fill(eventNum);
+    chanHisto->Fill(chanNum);
   }
 
 }

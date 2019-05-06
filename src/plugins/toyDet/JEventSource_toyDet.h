@@ -48,7 +48,8 @@ class JEventSource_toyDet : public JEventSource{
 		
   static std::string GetDescription(void){ return "My Event source"; }
   void Open(void);
-  std::shared_ptr<const JEvent> GetEvent(void);
+  /* std::shared_ptr<const JEvent> GetEvent(void); */
+  void GetEvent(std::shared_ptr<JEvent>);
   bool GetObjects(const std::shared_ptr<const JEvent>& aEvent, JFactory* aFactory);
   // std::shared_ptr<JTaskBase> GetProcessEventTask(std::shared_ptr<const JEvent>&& aEvent);
 
