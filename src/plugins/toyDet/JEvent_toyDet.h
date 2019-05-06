@@ -21,13 +21,14 @@
 /// Detailed class description.
 //////////////////////////////////////////////////////////////////////////////////////////////////
 class JEvent_toyDet : public JEvent{
-	public:
-		        JEvent_toyDet(){}
-		virtual ~JEvent_toyDet(){}
+ public:
+		
+  JEvent_toyDet() {}
+  virtual ~JEvent_toyDet() {}
 
-		// This represents an event read from a JEventSource_toyDet object
-		// Add members that can hold the data in whatever form is easy to access
-		// in the JEventSource_toyDet::GetObjects method
+  // This represents an event read from a JEventSource_toyDet object
+  // Add members that can hold the data in whatever form is easy to access
+  // in the JEventSource_toyDet::GetObjects method
 };
 
 #endif // _JEvent_toyDet_h_

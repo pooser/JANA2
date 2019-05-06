@@ -9,11 +9,22 @@
 // [ Source ]
 // [ Revision ]
 
-
 #ifndef _JEventProcessor_toyDet_h_
 #define _JEventProcessor_toyDet_h_
 
+#include <mutex>
+
 #include <JANA/JEventProcessor.h>
+#include <JANA/JEvent.h>
+
+#include "JEvent_toyDet.h"
+
+#include "detHit.h"
+
+#include <TFile.h>
+#include <TH1.h>
+
+using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 /// Brief class description.
@@ -21,18 +32,25 @@
 /// Detailed class description.
 //////////////////////////////////////////////////////////////////////////////////////////////////
 class JEventProcessor_toyDet : public JEventProcessor{
-	public:
-		JEventProcessor_toyDet();
-		virtual ~JEventProcessor_toyDet();
 
-		virtual void Init(void);
-		virtual void Process(const std::shared_ptr<const JEvent>& aEvent);
-		virtual void Finish(void);
+ public:
 
-	protected:
+  JEventProcessor_toyDet();
+  virtual ~JEventProcessor_toyDet();
+
+  virtual void Init(void);
+  virtual void Process(const std::shared_ptr<const JEvent>& aEvent);
+  virtual void Finish(void);
+
+ protected:
 
 
-	private:
+ private:
+
+  mutex mymutex;
+
+  TFile *testFile;
+  TH1I  *aHisto, *bHisto, *cHisto, *dHisto;
 
 };
 

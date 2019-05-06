@@ -25,7 +25,7 @@ JEventProcessor_test::JEventProcessor_test()
 //---------------------------------
 JEventProcessor_test::~JEventProcessor_test()
 {
-
+  testFile->Close();
 }
 
 //------------------
@@ -78,5 +78,5 @@ void JEventProcessor_test::Process(const std::shared_ptr<const JEvent>& aEvent)
 void JEventProcessor_test::Finish(void)
 {
 	// This is called when at the end of event processing
-	testFile->Write(); testFile->Close();
+  testFile->Write();
 }

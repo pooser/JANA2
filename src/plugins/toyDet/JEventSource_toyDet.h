@@ -22,6 +22,9 @@
 
 #include "JEvent_toyDet.h"
 
+#include "detHit.h"
+#include "rawSamples.h"
+
 using namespace std;
 
 // This first bit is optional. It allows you to specify how likely this class
@@ -37,29 +40,25 @@ using namespace std;
 /// Detailed class description.
 //////////////////////////////////////////////////////////////////////////////////////////////////
 class JEventSource_toyDet : public JEventSource{
-	public:
+  
+ public:
                 
-                JEventSource_toyDet(std::string source_name, JApplication *app);
-		virtual ~JEventSource_toyDet();
+  JEventSource_toyDet(std::string source_name, JApplication *app);
+  virtual ~JEventSource_toyDet();
 		
-		static std::string GetDescription(void){ return "My Event source"; }
-		void Open(void);
+  static std::string GetDescription(void){ return "My Event source"; }
+  void Open(void);
+  std::shared_ptr<const JEvent> GetEvent(void);
+  bool GetObjects(const std::shared_ptr<const JEvent>& aEvent, JFactory* aFactory);
+  // std::shared_ptr<JTaskBase> GetProcessEventTask(std::shared_ptr<const JEvent>&& aEvent);
 
-		std::shared_ptr<const JEvent> GetEvent(void);
-		bool GetObjects(const std::shared_ptr<const JEvent>& aEvent, JFactory* aFactory);
-		// std::shared_ptr<JTaskBase> GetProcessEventTask(std::shared_ptr<const JEvent>&& aEvent);
-
-                vector <double> *A; vector <int> *B;
-
-        private:
-                // User defined variables
-		ifstream ifs;
-		string line;
-		vector <double>            eventTdcData, eventAdcData;
-		vector < vector <double> > chanTdcData, chanAdcData;
-
-		// User defined functions
-		vector <double> convStrToVecDbl(string strToConv);
+ private:
+  
+  // User defined variables
+  ifstream ifs;
+  string line;
+  vector <double> tdcData, adcData;
+  vector <rawSamples*> data;
 
 };
 
