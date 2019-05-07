@@ -25,7 +25,7 @@ JEventProcessor_toyDet::JEventProcessor_toyDet()
 //---------------------------------
 JEventProcessor_toyDet::~JEventProcessor_toyDet()
 {
-  testFile->Close();
+  outFile->Close();
 }
 
 //------------------
@@ -34,14 +34,12 @@ JEventProcessor_toyDet::~JEventProcessor_toyDet()
 void JEventProcessor_toyDet::Init(void)
 {
   // This is called once at program startup.
-  testFile = new TFile("test.root", "RECREATE");
-  aHisto   = new TH1I("aHisto", "a test; a test; NOE", 100, 0, 100);
-  bHisto   = new TH1I("bHisto", "b test; b test; NOE", 100, 0, 100);
-  cHisto   = new TH1I("cHisto", "c test; c test; NOE", 100, 0, 100);
-  dHisto   = new TH1I("dHisto", "d test; d test; NOE", 100, 0, 100);
 
-  eventHisto = new TH1I("eventHisto", "Event Number Histogram; Event Number; Number of Entries", 10, 0, 10);
-  chanHisto  = new TH1I("chanHisto",  "Channel Number Histogram; Channel Number; Number of Entries", 10, 0, 10);
+  // define root file
+  outFile = new TFile("outFile.root", "RECREATE");
+  // define histos
+  chanHisto  = new TH1I("chanHisto",  "Channel Number Histogram; Channel Number; Number of Entries", 22, -0.5, 21.5);
+  eventHisto = new TH1I("eventHisto", "Event Number Histogram; Event Number; Number of Entries", 22, -0.5, 21.5);
 }
 
 //------------------
@@ -63,21 +61,18 @@ void JEventProcessor_toyDet::Process(const std::shared_ptr<const JEvent>& aEvent
   //  ... fill histograms or trees ...
   // }
 
-  lock_guard<mutex> lck( mymutex );
+  auto sampleData = aEvent->Get<rawSamples>();
 
-  auto hit = aEvent->Get<detHit>();
+  lock_guard<mutex> lck(fillMutex);
 
-  for(auto h : hit) {
-    double a = h->A; double b = h->B;
-    cHisto->Fill(a); dHisto->Fill(b);
-  }
+  for (auto data : sampleData) {
+    int chanNum  = data->chan;
+    int eventNum = data->event;
 
-  auto data = aEvent->Get<rawSamples>();
-  for (auto theData : data) {
-    int eventNum = theData->event;
-    int chanNum  = theData->chan;
-    eventHisto->Fill(eventNum);
+    cout << "chanNum = " << chanNum << ", eventNum = " << eventNum << endl; 
+
     chanHisto->Fill(chanNum);
+    eventHisto->Fill(eventNum);
   }
 
 }
@@ -88,5 +83,5 @@ void JEventProcessor_toyDet::Process(const std::shared_ptr<const JEvent>& aEvent
 void JEventProcessor_toyDet::Finish(void)
 {
   // This is called when at the end of event processing
-  testFile->Write();
+  outFile->Write();
 }

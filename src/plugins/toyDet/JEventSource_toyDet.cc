@@ -35,6 +35,7 @@ JEventSource_toyDet::~JEventSource_toyDet()
   if( mFactoryGenerator != nullptr ) delete mFactoryGenerator;
 
   // Close the file/stream here.
+  cout << "Closing " << mName << " now in JEventSource_toyDet::~JEventSource_toyDet" << endl;
   ifs.close();
 }
 
@@ -46,7 +47,7 @@ void JEventSource_toyDet::Open(void)
   // Open the file/stream here. The name of the source will be in mName
   ifs.open(mName);
   if (!ifs) {
-    cout << "!!! Unable to open in JEventSource_toyDet::Open !!!" << endl;
+    cout << "!!! Unable to open " << mName << " in JEventSource_toyDet::Open !!!" << endl;
     exit(1);  // terminate with error
   }
 }
@@ -58,110 +59,119 @@ void JEventSource_toyDet::Open(void)
 void JEventSource_toyDet::GetEvent(std::shared_ptr<JEvent> event)
 {
 
-  // Read an event (or possibly block of events) from the source return it.
-	
-  // If an event was successfully read in, return kSUCCESS. If there
-  // are no more events in the source to read, return kNO_MORE_EVENTS.
-  // If the source has no events at the moment, but may later (e.g.
-  // a live stream) then return kTRY_AGAIN;
+  // This should read an event from the input stream
 
-  // Throw exception if we have exhausted the source of events
-  static size_t nevents = 0; // by way of example, just count 1000000 events
-  if( ++nevents > 10 ) throw JEventSource::RETURN_STATUS::kNO_MORE_EVENTS;
-
-  // if( true ) return JEventSource::RETURN_STATUS::kSUCCESS;
-
-  // This should read an event from the input stream and make a
-  // JEventtoyDet out of it.
-  // auto jevent = new JEvent_toyDet();
-  // ... add event data to jevent ...
   if (ifs.is_open()) {
 
+    // initialize counters
     int lineCntr = 0; int chanCntr = 0; int eventCntr = 0;
-    while (getline(ifs, line)) {
 
+    // read lines of input file
+    while (getline(ifs, line)) {
+  
+      // locate event delimiter
       size_t eventDelim = line.find('@');
       if (eventDelim != string::npos) {
-
+	// iterate and reset counters, store and clear data objects
 	eventCntr++; chanCntr = 0;
-	tdcData.clear(); adcData.clear();
-
+	if (eventCntr > 1) eventData.push_back(chanData);
+	tdcData.clear(); adcData.clear(); chanData.clear();
       }
 
-      cout << "Level 0: event = " << eventCntr << endl;
-      cout << "Level 0: line = " << line << endl;
-      cout << "Level 0: event tdc vec size = "   << tdcData.size() << endl;
-      cout << "Level 0: event adc vec size = "   << adcData.size() << endl;
+      // cout << "Level 0: eventCntr      = " << eventCntr        << endl;
+      // cout << "Level 0: chanCntr       = " << chanCntr         << endl;
+      // cout << "Level 0: line           = " << line             << endl;
+      // cout << "Level 0: tdcData size   = " << tdcData.size()   << endl;
+      // cout << "Level 0: adcData size   = " << adcData.size()   << endl;
+      // cout << "Level 0: chanData size  = " << chanData.size()  << endl;
+      // cout << "Level 0: eventData size = " << eventData.size() << endl;
 
+      // locate channel delimiter
       size_t chanDelim = line.find('#');
       if (chanDelim != string::npos) {
-     
+     	// iterate and reset counters, clear data objects
         lineCntr = 0; chanCntr++;
-
-	cout << "chanCntr = " << chanCntr << endl;
-
-        if (chanCntr > 1) {  
-	  
-	  cout << "Pushing back rawSamples data : " << "chanCntr - 1  = " << chanCntr - 1 << endl;
-	  data.push_back(new rawSamples(eventCntr, chanCntr - 1, tdcData, adcData));
-	  tdcData.clear(); adcData.clear();
-	  cout << "data size = " << data.size() << endl;
-
-        }
-
-	cout << "Level 1: event = " << eventCntr << endl;
-        cout << "Level 1: line = " << line << endl;
-        cout << "Level 1: event tdc vec size = "   << tdcData.size() << endl;
-        cout << "Level 1: event adc vec size = "   << adcData.size() << endl;
-
+	tdcData.clear(); adcData.clear();
       }
 
-      lineCntr++;
+      // cout << "Level 1: eventCntr      = " << eventCntr        << endl;
+      // cout << "Level 1: chanCntr       = " << chanCntr         << endl;
+      // cout << "Level 1: line           = " << line             << endl;
+      // cout << "Level 1: tdcData size   = " << tdcData.size()   << endl;
+      // cout << "Level 1: adcData size   = " << adcData.size()   << endl;
+      // cout << "Level 1: chanData size  = " << chanData.size()  << endl;
+      // cout << "Level 1: eventData size = " << eventData.size() << endl;
 
+      lineCntr++;
+      // aquire tdc data
       if (lineCntr > 0 && lineCntr % 2 == 0 && 
-	  eventDelim == string::npos && chanDelim == string::npos) { // tdc data
+	  eventDelim == string::npos && chanDelim == string::npos) {
 	istringstream istr(line);
 	double tdcSample;
 	while (!istr.eof()) {
 	  istr >> tdcSample; if (!istr) break;
 	  tdcData.push_back(tdcSample);
 	}
-        cout << "tdc data" << endl;
-        for (auto data : tdcData) cout << data << endl;
+        // cout << "tdc data" << endl;
+        // for (auto sample : tdcData) cout << sample << endl;
       }
+      // acquire adc data
       if (lineCntr > 0 && lineCntr % 2 != 0 && 
-	  eventDelim == string::npos && chanDelim == string::npos) { // adc data
+	  eventDelim == string::npos && chanDelim == string::npos) {
 	istringstream istr(line);
 	double adcSample;
 	while (!istr.eof()) {
 	  istr >> adcSample; if (!istr) break;
 	  adcData.push_back(adcSample);
 	}
-        cout << "adc data" << endl;	   
-        for (auto data : adcData) cout << data << endl;
+        // cout << "adc data" << endl;	   
+        // for (auto sample : adcData) cout << sample << endl;
       }
 
-      cout << "Level 2: event = " << eventCntr << endl;
-      cout << "Level 2: line = " << line << endl;
-      cout << "Level 2: event tdc vec size = "   << tdcData.size() << endl;
-      cout << "Level 2: event adc vec size = "   << adcData.size() << endl;
+      size_t tdcDataSize = tdcData.size();
+      size_t adcDataSize = adcData.size();      
+      
+      if (tdcDataSize == adcDataSize && tdcDataSize > 0) 
+	chanData.push_back(new rawSamples(eventCntr, chanCntr, tdcData, adcData));
 
-      line.clear();
+      // cout << "Level 2: eventCntr      = " << eventCntr        << endl;
+      // cout << "Level 2: chanCntr       = " << chanCntr         << endl;
+      // cout << "Level 2: line           = " << line             << endl;
+      // cout << "Level 2: tdcData size   = " << tdcData.size()   << endl;
+      // cout << "Level 2: adcData size   = " << adcData.size()   << endl;
+      // cout << "Level 2: chanData size  = " << chanData.size()  << endl;
+      // cout << "Level 2: eventData size = " << eventData.size() << endl;
+
+      line.clear();   
+    }
+
+    if (ifs.eof()) {
+      // append data objects from last event
+      eventData.push_back(chanData);
+      cout << "Reached end of file/stream " << mName << endl;
+
+      // cout << "Level 3: eventCntr      = " << eventCntr        << endl;
+      // cout << "Level 3: chanCntr       = " << chanCntr         << endl;
+      // cout << "Level 3: line           = " << line             << endl;
+      // cout << "Level 3: tdcData size   = " << tdcData.size()   << endl;
+      // cout << "Level 3: adcData size   = " << adcData.size()   << endl;
+      // cout << "Level 3: chanData size  = " << chanData.size()  << endl;
+      // cout << "Level 3: eventData size = " << eventData.size() << endl;
+
+      ifs.close();
 
     }
-    // grab last channel data
-    data.push_back(new rawSamples(eventCntr, chanCntr - 1, tdcData, adcData));
-    cout << "data size = " << data.size() << endl;
-
-    event->Insert(new rawSamples(eventCntr, chanCntr - 1, tdcData, adcData));
-
   }
-  else {
-    cout << "!!! Unable to open in JEventSource_toyDet::GetEvent !!!" << endl;
-    exit(1); // terminate with error
+
+  // lock_guard <mutex> lck(eventMutex);
+
+  // Throw exception if we have exhausted the source of events
+  static size_t ievent = 0; 
+  if (ievent < eventData.size()) {
+    ievent++;
+    event->Insert(eventData[ievent-1]);
   }
-	
-  // return std::shared_ptr<JEvent>( (JEvent*)jevent );
+  else throw JEventSource::RETURN_STATUS::kNO_MORE_EVENTS;
 
 }
 

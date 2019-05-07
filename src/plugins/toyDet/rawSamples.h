@@ -28,8 +28,9 @@ class rawSamples:public JObject{
   
   rawSamples(int event, int chan, vector <double> &tdcData, vector <double> &adcData)
     : event(event), chan(chan), tdcData(tdcData), adcData(adcData) {}
-  
+ 
   int event, chan;
+
   vector <double> tdcData, adcData;
 		
  protected:

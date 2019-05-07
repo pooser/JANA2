@@ -47,10 +47,9 @@ class JEventProcessor_toyDet : public JEventProcessor{
 
  private:
 
-  mutex mymutex;
+  mutex fillMutex;
 
-  TFile *testFile;
-  TH1I  *aHisto, *bHisto, *cHisto, *dHisto;
+  TFile *outFile;
   TH1I  *eventHisto, *chanHisto;
 
 };
