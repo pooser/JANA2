@@ -58,17 +58,11 @@ void JEventSource_test::GetEvent(std::shared_ptr<JEvent> event)
 	static size_t Nevents = 0; // by way of example, just count 1000000 events
 	if( ++Nevents > 100 ) throw JEventSource::RETURN_STATUS::kNO_MORE_EVENTS;
 	
-	// This should read an event from the input stream and make a
-	// JEventtest out of it.
-
-	// auto jevent = new MyEvent();
-	// ... add event data to jevent ...
-	// return std::shared_ptr<JEvent>( (JEvent*)jevent );
+	// This should read an event from the input stream and make a JEvent out of it.
 
 	double x = 10.; double E = 5.; double t = 1.;
 	event->Insert(new MyHit(x, E, t));
 
-	// return event;
 }
 
 //------------------

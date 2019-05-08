@@ -37,9 +37,14 @@ void JEventProcessor_toyDet::Init(void)
 
   // define root file
   outFile = new TFile("outFile.root", "RECREATE");
-  // define histos
-  chanHisto  = new TH1I("chanHisto",  "Channel Number Histogram; Channel Number; Number of Entries", 22, -0.5, 21.5);
-  eventHisto = new TH1I("eventHisto", "Event Number Histogram; Event Number; Number of Entries", 22, -0.5, 21.5);
+  // define tdc tree and branches
+  dataTree = new TTree("T", "Toy Detector TDC Data Tree");
+  dataTree->Branch("chan",  &chan);
+  dataTree->Branch("event", &event);
+  for (uint ichan = 0; ichan < numChans; ichan++) {
+    dataTree->Branch(Form("chan_%d_tdcSamples", ichan+1), &tdcSamples);
+    dataTree->Branch(Form("chan_%d_adcSamples", ichan+1), &adcSamples);
+  }
 }
 
 //------------------
@@ -61,19 +66,25 @@ void JEventProcessor_toyDet::Process(const std::shared_ptr<const JEvent>& aEvent
   //  ... fill histograms or trees ...
   // }
 
-  auto sampleData = aEvent->Get<rawSamples>();
+  auto eventData = aEvent->Get<rawSamples>();
 
   lock_guard<mutex> lck(fillMutex);
 
-  for (auto data : sampleData) {
-    int chanNum  = data->chan;
-    int eventNum = data->event;
+  for (auto chanData : eventData) {
 
-    cout << "chanNum = " << chanNum << ", eventNum = " << eventNum << endl; 
+    chan  = chanData->chanNum;
+    event = chanData->eventNum;
 
-    chanHisto->Fill(chanNum);
-    eventHisto->Fill(eventNum);
+    tdcSamples.clear();
+    adcSamples.clear();
+
+    tdcSamples = chanData->tdcData;
+    adcSamples = chanData->adcData;
+
+    dataTree->Fill();
+
   }
+
 
 }
 

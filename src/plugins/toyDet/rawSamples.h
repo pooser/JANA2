@@ -26,10 +26,10 @@ class rawSamples:public JObject{
   rawSamples();
   virtual ~rawSamples();
   
-  rawSamples(int event, int chan, vector <double> &tdcData, vector <double> &adcData)
-    : event(event), chan(chan), tdcData(tdcData), adcData(adcData) {}
+  rawSamples(int eventNum, int chanNum, vector <double> &tdcData, vector <double> &adcData)
+    : eventNum(eventNum), chanNum(chanNum), tdcData(tdcData), adcData(adcData) {}
  
-  int event, chan;
+  int eventNum, chanNum;
 
   vector <double> tdcData, adcData;
 		

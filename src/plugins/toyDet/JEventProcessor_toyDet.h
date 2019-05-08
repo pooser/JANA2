@@ -23,6 +23,7 @@
 
 #include <TFile.h>
 #include <TH1.h>
+#include <TTree.h>
 
 using namespace std;
 
@@ -47,10 +48,16 @@ class JEventProcessor_toyDet : public JEventProcessor{
 
  private:
 
+  // mutex objects
   mutex fillMutex;
 
+  // root objects
   TFile *outFile;
-  TH1I  *eventHisto, *chanHisto;
+  TTree *dataTree;
+
+  uint chan, event;
+  static const uint numChans = 10;
+  vector <double> tdcSamples, adcSamples;
 
 };
 

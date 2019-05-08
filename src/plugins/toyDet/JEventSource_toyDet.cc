@@ -90,7 +90,7 @@ void JEventSource_toyDet::GetEvent(std::shared_ptr<JEvent> event)
       size_t chanDelim = line.find('#');
       if (chanDelim != string::npos) {
      	// iterate and reset counters, clear data objects
-        lineCntr = 0; chanCntr++;
+        chanCntr++; lineCntr = 0;
 	tdcData.clear(); adcData.clear();
       }
 
