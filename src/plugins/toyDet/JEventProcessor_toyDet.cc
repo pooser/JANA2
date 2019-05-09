@@ -39,11 +39,12 @@ void JEventProcessor_toyDet::Init(void)
   outFile = new TFile("outFile.root", "RECREATE");
   // define tdc tree and branches
   dataTree = new TTree("T", "Toy Detector TDC Data Tree");
-  dataTree->Branch("chan",  &chan);
-  dataTree->Branch("event", &event);
+  nentries = 0;
+  // dataTree->Branch("chan",  &chan);
+  // dataTree->Branch("event", &event);
   for (uint ichan = 0; ichan < numChans; ichan++) {
-    dataTree->Branch(Form("chan_%d_tdcSamples", ichan+1), &tdcSamples);
-    dataTree->Branch(Form("chan_%d_adcSamples", ichan+1), &adcSamples);
+    dataTree->Branch(Form("chan_%d_tdcSamples", ichan+1), &tdcSample);
+    dataTree->Branch(Form("chan_%d_adcSamples", ichan+1), &adcSample);   
   }
 }
 
@@ -71,20 +72,27 @@ void JEventProcessor_toyDet::Process(const std::shared_ptr<const JEvent>& aEvent
   lock_guard<mutex> lck(fillMutex);
 
   for (auto chanData : eventData) {
-
+   
     chan  = chanData->chanNum;
     event = chanData->eventNum;
 
-    tdcSamples.clear();
-    adcSamples.clear();
+    tdcSamples.clear(); tdcSamples = chanData->tdcData;
+    adcSamples.clear(); adcSamples = chanData->adcData;
 
-    tdcSamples = chanData->tdcData;
-    adcSamples = chanData->adcData;
+    for (auto tdc : tdcSamples) {
+      tdcSample = tdc;
+      dataTree->FindBranch(Form("chan_%d_tdcSamples", chan))->Fill();
+    }
 
-    dataTree->Fill();
+    for (auto adc : adcSamples) {
+      adcSample = adc;
+      dataTree->FindBranch(Form("chan_%d_adcSamples", chan))->Fill();
+    }
 
   }
 
+  nentries += tdcSamples.size();
+  dataTree->SetEntries(nentries);
 
 }
 

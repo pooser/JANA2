@@ -55,8 +55,9 @@ class JEventProcessor_toyDet : public JEventProcessor{
   TFile *outFile;
   TTree *dataTree;
 
-  uint chan, event;
-  static const uint numChans = 10;
+  uint chan, event, nentries;
+  static const uint numChans = 100;
+  double tdcSample, adcSample;
   vector <double> tdcSamples, adcSamples;
 
 };
