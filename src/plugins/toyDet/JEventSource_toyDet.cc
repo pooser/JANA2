@@ -17,13 +17,6 @@
 JEventSource_toyDet::JEventSource_toyDet(std::string source_name, JApplication *app):JEventSource(source_name, app)
 {
   // Don't open the file/stream here. Do it in the Open() method below.
-
-  // Uncomment the line below and modify it to specify all of the data types this source
-  // provides. The "MyHit" and "MyTrigger" are just examples of JObject types you might
-  // define (they don't actually exist). The purpose of this is to create empty JFactory
-  // objects that will serve as containers for the data the source produces.
-  // Make sure that all types are listed as template arguments here!!
-  // mFactoryGenerator = new JSourceFactoryGenerator<MyHit, MyTrigger>();
 }
 
 //---------------------------------
@@ -59,8 +52,7 @@ void JEventSource_toyDet::Open(void)
 void JEventSource_toyDet::GetEvent(std::shared_ptr<JEvent> event)
 {
 
-  // This should read an event from the input stream
-
+  // read an event from the input stream
   if (ifs.is_open()) {
 
     // initialize counters
@@ -78,14 +70,6 @@ void JEventSource_toyDet::GetEvent(std::shared_ptr<JEvent> event)
 	tdcData.clear(); adcData.clear(); chanData.clear();
       }
 
-      // cout << "Level 0: eventCntr      = " << eventCntr        << endl;
-      // cout << "Level 0: chanCntr       = " << chanCntr         << endl;
-      // cout << "Level 0: line           = " << line             << endl;
-      // cout << "Level 0: tdcData size   = " << tdcData.size()   << endl;
-      // cout << "Level 0: adcData size   = " << adcData.size()   << endl;
-      // cout << "Level 0: chanData size  = " << chanData.size()  << endl;
-      // cout << "Level 0: eventData size = " << eventData.size() << endl;
-
       // locate channel delimiter
       size_t chanDelim = line.find('#');
       if (chanDelim != string::npos) {
@@ -93,14 +77,6 @@ void JEventSource_toyDet::GetEvent(std::shared_ptr<JEvent> event)
         chanCntr++; lineCntr = 0;
 	tdcData.clear(); adcData.clear();
       }
-
-      // cout << "Level 1: eventCntr      = " << eventCntr        << endl;
-      // cout << "Level 1: chanCntr       = " << chanCntr         << endl;
-      // cout << "Level 1: line           = " << line             << endl;
-      // cout << "Level 1: tdcData size   = " << tdcData.size()   << endl;
-      // cout << "Level 1: adcData size   = " << adcData.size()   << endl;
-      // cout << "Level 1: chanData size  = " << chanData.size()  << endl;
-      // cout << "Level 1: eventData size = " << eventData.size() << endl;
 
       lineCntr++;
       // aquire tdc data
@@ -134,36 +110,17 @@ void JEventSource_toyDet::GetEvent(std::shared_ptr<JEvent> event)
       if (tdcDataSize == adcDataSize && tdcDataSize > 0) 
 	chanData.push_back(new rawSamples(eventCntr, chanCntr, tdcData, adcData));
 
-      // cout << "Level 2: eventCntr      = " << eventCntr        << endl;
-      // cout << "Level 2: chanCntr       = " << chanCntr         << endl;
-      // cout << "Level 2: line           = " << line             << endl;
-      // cout << "Level 2: tdcData size   = " << tdcData.size()   << endl;
-      // cout << "Level 2: adcData size   = " << adcData.size()   << endl;
-      // cout << "Level 2: chanData size  = " << chanData.size()  << endl;
-      // cout << "Level 2: eventData size = " << eventData.size() << endl;
-
       line.clear();   
     }
 
+    // when end of input file has been reached
     if (ifs.eof()) {
       // append data objects from last event
       eventData.push_back(chanData);
       cout << "Reached end of file/stream " << mName << endl;
-
-      // cout << "Level 3: eventCntr      = " << eventCntr        << endl;
-      // cout << "Level 3: chanCntr       = " << chanCntr         << endl;
-      // cout << "Level 3: line           = " << line             << endl;
-      // cout << "Level 3: tdcData size   = " << tdcData.size()   << endl;
-      // cout << "Level 3: adcData size   = " << adcData.size()   << endl;
-      // cout << "Level 3: chanData size  = " << chanData.size()  << endl;
-      // cout << "Level 3: eventData size = " << eventData.size() << endl;
-
       ifs.close();
-
     }
   }
-
-  // lock_guard <mutex> lck(eventMutex);
 
   // Throw exception if we have exhausted the source of events
   static size_t ievent = 0; 

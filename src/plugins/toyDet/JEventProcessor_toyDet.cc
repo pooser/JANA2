@@ -25,6 +25,7 @@ JEventProcessor_toyDet::JEventProcessor_toyDet()
 //---------------------------------
 JEventProcessor_toyDet::~JEventProcessor_toyDet()
 {
+  // close output root file
   outFile->Close();
 }
 
@@ -37,14 +38,14 @@ void JEventProcessor_toyDet::Init(void)
 
   // define root file
   outFile = new TFile("outFile.root", "RECREATE");
-  // define tdc tree and branches
-  dataTree = new TTree("T", "Toy Detector TDC Data Tree");
+  // define trees and branches
+  eventTree  = new TTree("ET", "Toy Detector Event Data Tree");
+  sampleTree = new TTree("ST", "Toy Detector Sample Data Tree");
   nentries = 0;
-  // dataTree->Branch("chan",  &chan);
-  // dataTree->Branch("event", &event);
+  eventTree->Branch("event", &event); 
   for (uint ichan = 0; ichan < numChans; ichan++) {
-    dataTree->Branch(Form("chan_%d_tdcSamples", ichan+1), &tdcSample);
-    dataTree->Branch(Form("chan_%d_adcSamples", ichan+1), &adcSample);   
+    sampleTree->Branch(Form("chan_%d_tdcSamples", ichan+1), &tdcSample);
+    sampleTree->Branch(Form("chan_%d_adcSamples", ichan+1), &adcSample);   
   }
 }
 
@@ -67,32 +68,35 @@ void JEventProcessor_toyDet::Process(const std::shared_ptr<const JEvent>& aEvent
   //  ... fill histograms or trees ...
   // }
 
+  // get raw samples object for each event
   auto eventData = aEvent->Get<rawSamples>();
-
+  // impose mutex lock
   lock_guard<mutex> lck(fillMutex);
-
+  
+  // for each event loop over the channel data
   for (auto chanData : eventData) {
    
+    // acquire event and channel data
     chan  = chanData->chanNum;
     event = chanData->eventNum;
-
     tdcSamples.clear(); tdcSamples = chanData->tdcData;
     adcSamples.clear(); adcSamples = chanData->adcData;
-
+    // get sample data and fill channel branches
     for (auto tdc : tdcSamples) {
       tdcSample = tdc;
-      dataTree->FindBranch(Form("chan_%d_tdcSamples", chan))->Fill();
+      sampleTree->FindBranch(Form("chan_%d_tdcSamples", chan))->Fill();
     }
-
     for (auto adc : adcSamples) {
       adcSample = adc;
-      dataTree->FindBranch(Form("chan_%d_adcSamples", chan))->Fill();
+      sampleTree->FindBranch(Form("chan_%d_adcSamples", chan))->Fill();
     }
 
   }
 
+  // fill event tree and set entires on sample tree
+  eventTree->Fill();
   nentries += tdcSamples.size();
-  dataTree->SetEntries(nentries);
+  sampleTree->SetEntries(nentries);
 
 }
 

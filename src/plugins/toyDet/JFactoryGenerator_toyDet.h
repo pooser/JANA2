@@ -5,7 +5,6 @@
 #include <JANA/JFactoryGenerator.h>
 #include <JANA/JFactoryT.h>
 
-#include "detHit.h"
 #include "rawSamples.h"
 
 class JFactoryGenerator_toyDet:public JFactoryGenerator{
@@ -14,7 +13,6 @@ class JFactoryGenerator_toyDet:public JFactoryGenerator{
 
   void GenerateFactories(JFactorySet *factory_set){
 		
-    factory_set->Add(new JFactoryT<detHit>());
     factory_set->Add(new JFactoryT<rawSamples>());
 
   }

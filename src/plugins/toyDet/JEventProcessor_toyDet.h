@@ -19,10 +19,7 @@
 
 #include "JEvent_toyDet.h"
 
-#include "detHit.h"
-
 #include <TFile.h>
-#include <TH1.h>
 #include <TTree.h>
 
 using namespace std;
@@ -53,11 +50,14 @@ class JEventProcessor_toyDet : public JEventProcessor{
 
   // root objects
   TFile *outFile;
-  TTree *dataTree;
+  TTree *eventTree, *sampleTree;
 
-  uint chan, event, nentries;
-  static const uint numChans = 100;
+  // user defined data types
+  static const uint numChans = 10;
+
+  uint   chan, event, nentries;
   double tdcSample, adcSample;
+
   vector <double> tdcSamples, adcSamples;
 
 };

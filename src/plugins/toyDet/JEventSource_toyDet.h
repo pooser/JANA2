@@ -23,7 +23,6 @@
 
 #include "JEvent_toyDet.h"
 
-#include "detHit.h"
 #include "rawSamples.h"
 
 using namespace std;
@@ -51,7 +50,6 @@ class JEventSource_toyDet : public JEventSource{
   // User defined variables
   ifstream ifs;
   string   line;
-  mutex    eventMutex;
 
   vector <double> tdcData, adcData;
   vector <rawSamples*> chanData;
